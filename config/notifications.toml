@@ -1,0 +1,4 @@
+[slack]
+enabled = true
+api_key = "sdfk3oasdfsadfkj239dsdff"
+channel = "#devops"
