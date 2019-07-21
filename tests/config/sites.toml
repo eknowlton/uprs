@@ -1,0 +1,7 @@
+[google]
+uri = "https://google.com"
+interval = 10
+
+[digg]
+uri = "https://digg.com"
+interval = 10

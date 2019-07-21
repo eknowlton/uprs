@@ -13,7 +13,7 @@ use std::path::PathBuf;
 
 use futures::{Async, Future, Poll};
 
-use hyper::{rt, Client};
+use hyper::rt;
 
 use https_client::HttpsClient;
 

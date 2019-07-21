@@ -78,7 +78,7 @@ mod tests {
 
     #[test]
     fn test_settings_sites() {
-        let config_dir = PathBuf::from_str("config").unwrap();
+        let config_dir = PathBuf::from_str("tests/config").unwrap();
         let sites = Settings::sites(&config_dir);
 
         let mut expected = HashMap::new();
@@ -102,7 +102,7 @@ mod tests {
 
     #[test]
     fn test_settings_notifications() {
-        let config_dir = PathBuf::from_str("config").unwrap();
+        let config_dir = PathBuf::from_str("tests/config").unwrap();
         let notifications = Settings::notifications(&config_dir);
 
         let expected = Notifications {
