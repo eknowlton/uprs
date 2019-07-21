@@ -19,7 +19,7 @@ struct Site {
     interval: usize,
 }
 
-type Sites = HashMap<String, Site>;
+type Sites = Option<HashMap<String, Site>>;
 
 #[derive(Debug)]
 pub struct Settings {
@@ -97,7 +97,7 @@ mod tests {
             },
         );
 
-        assert_eq!(expected, sites.unwrap());
+        assert_eq!(expected, sites.unwrap().unwrap());
     }
 
     #[test]
