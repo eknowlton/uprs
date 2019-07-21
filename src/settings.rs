@@ -4,14 +4,13 @@ use std::path::PathBuf;
 
 #[derive(Debug, Deserialize, PartialEq)]
 struct SlackNotification {
-    enabled: bool,
     api_key: String,
     channel: String,
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
 struct Notifications {
-    slack: SlackNotification,
+    slack: Option<SlackNotification>,
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
@@ -107,11 +106,10 @@ mod tests {
         let notifications = Settings::notifications(&config_dir);
 
         let expected = Notifications {
-            slack: SlackNotification {
-                enabled: true,
+            slack: Some(SlackNotification {
                 api_key: String::from("sdfk3oasdfsadfkj239dsdff"),
                 channel: String::from("#devops"),
-            },
+            }),
         };
 
         assert_eq!(expected, notifications.unwrap());
