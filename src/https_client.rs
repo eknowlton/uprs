@@ -88,8 +88,26 @@ mod tests {
                     panic!(); // should receive a error
                 })
                 .map_err(|result| match result.into_cause() {
-                    Some(_) => assert!(true),
+                    Some(_) => {
+                        // reciving some error is enough maybe
+                        assert!(true)
+                    }
                     _ => panic!(),
+                })
+        }));
+    }
+
+    #[test]
+    fn test_https_connector_passes_for_https() {
+        let uri: hyper::Uri = "https://google.com".parse().unwrap();
+
+        rt::run(rt::lazy(|| {
+            HttpsClient::new()
+                .client
+                .get(uri)
+                .map(|_| assert!(true))
+                .map_err(|_| {
+                    panic!(); // should not receive a error
                 })
         }));
     }
