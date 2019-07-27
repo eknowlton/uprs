@@ -69,3 +69,50 @@ impl Connect for HttpsConnector {
         }))
     }
 }
+#[cfg(test)]
+mod tests {
+
+    use super::HttpsClient;
+    use futures::future::{err, Future};
+    use hyper::rt;
+    use std::io;
+
+    #[test]
+    fn test_https_connector_fails_for_non_https() {
+        let uri: hyper::Uri = "http://google.com".parse().unwrap();
+
+        rt::run(rt::lazy(|| {
+            HttpsClient::new()
+                .client
+                .get(uri)
+                .map(|_| {
+                    panic!(); // should receive a error
+                })
+                .map_err(|hyper_err| {
+                    let expected = Box::new(err(io::Error::new(
+                        io::ErrorKind::Other,
+                        "only works with https",
+                    )));
+
+                    assert_eq!(*expected, hyper_err);
+                })
+        }));
+    }
+
+    #[test]
+    fn test_https_connector_works_with_https() {
+        let uri: hyper::Uri = "https://google.com".parse().unwrap();
+
+        rt::run(rt::lazy(|| {
+            HttpsClient::new()
+                .client
+                .get(uri)
+                .map(|_| {
+                    panic!(); // should receive a error
+                })
+                .map_err(|err| {
+                    println!("{:?}", err);
+                })
+        }));
+    }
+}
