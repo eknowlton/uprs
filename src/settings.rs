@@ -1,4 +1,5 @@
 use config::{Config, ConfigError, File};
+use serde::Deserialize;
 use std::collections::HashMap;
 use std::path::PathBuf;
 
@@ -9,22 +10,22 @@ struct SlackNotification {
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
-struct Notifications {
+pub struct Notifications {
     slack: Option<SlackNotification>,
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
-struct Site {
-    uri: String,
+pub struct Site {
+    pub uri: String,
     interval: usize,
 }
 
-type Sites = Option<HashMap<String, Site>>;
+type Sites = HashMap<String, Site>;
 
 #[derive(Debug)]
 pub struct Settings {
-    notifications: Notifications,
-    sites: Sites,
+    pub notifications: Notifications,
+    pub sites: Option<Sites>,
 }
 
 impl Settings {
@@ -38,7 +39,7 @@ impl Settings {
         })
     }
 
-    fn sites(config_dir: &PathBuf) -> Result<Sites, ConfigError> {
+    fn sites(config_dir: &PathBuf) -> Result<Option<Sites>, ConfigError> {
         let mut sites = Config::new();
         let mut config_dir = config_dir.clone();
         config_dir.push("sites");
@@ -49,7 +50,7 @@ impl Settings {
         };
 
         match sites.try_into::<Sites>() {
-            Ok(sites) => Ok(sites),
+            Ok(sites) => Ok(Some(sites)),
             Err(e) => Err(e),
         }
     }
@@ -78,7 +79,7 @@ mod tests {
 
     #[test]
     fn test_settings_sites() {
-        let config_dir = PathBuf::from_str("config").unwrap();
+        let config_dir = PathBuf::from_str("tests/config").unwrap();
         let sites = Settings::sites(&config_dir);
 
         let mut expected = HashMap::new();
@@ -102,7 +103,7 @@ mod tests {
 
     #[test]
     fn test_settings_notifications() {
-        let config_dir = PathBuf::from_str("config").unwrap();
+        let config_dir = PathBuf::from_str("tests/config").unwrap();
         let notifications = Settings::notifications(&config_dir);
 
         let expected = Notifications {
