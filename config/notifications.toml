@@ -1,3 +1,10 @@
-[slack]
-api_key = "sdfk3oasdfsadfkj239dsdff"
-channel = "#devops"
+#
+# Notification Settings
+#
+# Choose how you want to be notified.
+# Notifications are disabled by default.
+#
+# [slack]
+# api_key = "secret-key-here"
+# channel = "#devops"
+#

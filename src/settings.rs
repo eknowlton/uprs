@@ -17,7 +17,7 @@ pub struct Notifications {
 #[derive(Debug, Deserialize, PartialEq)]
 pub struct Site {
     pub uri: String,
-    interval: usize,
+    pub interval: usize,
 }
 
 type Sites = HashMap<String, Site>;
