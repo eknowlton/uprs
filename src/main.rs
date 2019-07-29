@@ -1,8 +1,7 @@
-#[macro_use]
-extern crate serde;
 extern crate config;
 extern crate futures;
 extern crate hyper;
+extern crate serde;
 extern crate tokio;
 
 mod https_client;
@@ -39,6 +38,7 @@ impl Future for Uprs {
                 let uri: hyper::Uri = site.uri.parse().unwrap();
 
                 let https_client = HttpsClient::new();
+
                 https_client
                     .client
                     .get(uri)

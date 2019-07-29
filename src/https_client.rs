@@ -43,7 +43,7 @@ impl HttpsConnector {
 impl Connect for HttpsConnector {
     type Transport = TlsStream<TcpStream>;
     type Error = io::Error;
-    type Future = Box<Future<Item = (Self::Transport, Connected), Error = Self::Error> + Send>;
+    type Future = Box<dyn Future<Item = (Self::Transport, Connected), Error = Self::Error> + Send>;
 
     fn connect(&self, dst: Destination) -> Self::Future {
         if dst.scheme() != "https" {
@@ -67,5 +67,49 @@ impl Connect for HttpsConnector {
                 .map(|s| (s, connected))
                 .map_err(|e| io::Error::new(io::ErrorKind::Other, e))
         }))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+
+    use super::HttpsClient;
+    use futures::future::Future;
+    use hyper::rt;
+
+    #[test]
+    fn test_https_connector_fails_for_non_https() {
+        let uri: hyper::Uri = "http://google.com".parse().unwrap();
+
+        rt::run(rt::lazy(|| {
+            HttpsClient::new()
+                .client
+                .get(uri)
+                .map(|_| {
+                    panic!(); // should receive a error
+                })
+                .map_err(|result| match result.into_cause() {
+                    Some(_) => {
+                        // reciving some error is enough maybe
+                        assert!(true)
+                    }
+                    _ => panic!(),
+                })
+        }));
+    }
+
+    #[test]
+    fn test_https_connector_passes_for_https() {
+        let uri: hyper::Uri = "https://google.com".parse().unwrap();
+
+        rt::run(rt::lazy(|| {
+            HttpsClient::new()
+                .client
+                .get(uri)
+                .map(|_| assert!(true))
+                .map_err(|_| {
+                    panic!(); // should not receive a error
+                })
+        }));
     }
 }
