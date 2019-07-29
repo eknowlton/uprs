@@ -11,6 +11,7 @@ use futures::{Async, Future, Poll};
 use settings::{Settings, Site};
 use std::path::PathBuf;
 
+use futures::{Async, Future, Poll};
 use hyper::rt;
 
 use https_client::HttpsClient;
