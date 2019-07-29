@@ -7,11 +7,10 @@ extern crate tokio;
 mod https_client;
 mod settings;
 
-use settings::Settings;
+use settings::{Settings, Site};
 use std::path::PathBuf;
 
 use futures::{Async, Future, Poll};
-
 use hyper::rt;
 
 use https_client::HttpsClient;
@@ -31,19 +30,24 @@ impl Future for Uprs {
     type Error = ();
 
     fn poll(&mut self) -> Poll<Self::Item, Self::Error> {
-        let sites = self.settings.sites.take();
+        let sites = self.settings.sites.take().unwrap();
 
-        for (_, site) in sites.unwrap() {
+        if sites.is_empty() {
+            println!("No sites found.");
+        }
+
+        for (name, site) in sites {
             tokio::spawn({
-                let uri: hyper::Uri = site.uri.parse().unwrap();
+                let Site { uri, interval: _ } = site;
+                let uri: hyper::Uri = uri.parse().unwrap();
 
                 let https_client = HttpsClient::new();
 
                 https_client
                     .client
                     .get(uri)
-                    .map(|res| {
-                        println!("Response: {}", res.status());
+                    .map(move |res| {
+                        println!("[{}] Response: {}", name, res.status());
                     })
                     .map_err(|err| {
                         eprintln!("Error: {}", err);
