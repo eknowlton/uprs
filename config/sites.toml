@@ -1,7 +1,20 @@
+#
+# List of sites you wish to check,
+# and when.
+#
+# [google]
+# uri = "https://google.com"
+# interval = 10
+#
+# [digg]
+# uri = "https://digg.com"
+# interval = 10
+
 [google]
 uri = "https://google.com"
 interval = 10
 
 [digg]
-uri = "http://digg.com"
+uri = "https://digg.com"
 interval = 10
+

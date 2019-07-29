@@ -69,6 +69,7 @@ impl Connect for HttpsConnector {
         }))
     }
 }
+
 #[cfg(test)]
 mod tests {
 
