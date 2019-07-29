@@ -7,7 +7,6 @@ extern crate tokio;
 mod https_client;
 mod settings;
 
-use futures::{Async, Future, Poll};
 use settings::{Settings, Site};
 use std::path::PathBuf;
 
