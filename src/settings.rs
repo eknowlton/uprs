@@ -4,6 +4,22 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 
 #[derive(Debug, Deserialize, PartialEq)]
+enum DatabaseDriver {
+    Sqlite(String),
+}
+
+#[derive(Debug, Deserialize, PartialEq)]
+struct SqlliteConnection {
+    uri: String,
+}
+
+#[derive(Debug, Deserialize, PartialEq)]
+struct Options {
+    database: DatabaseDriver,
+    sqlite: Option<SqlliteConnection>,
+}
+
+#[derive(Debug, Deserialize, PartialEq)]
 struct SlackNotification {
     api_key: String,
     channel: String,
@@ -24,6 +40,7 @@ type Sites = HashMap<String, Site>;
 
 #[derive(Debug)]
 pub struct Settings {
+    options: Options,
     pub notifications: Notifications,
     pub sites: Option<Sites>,
 }
@@ -32,11 +49,29 @@ impl Settings {
     pub fn new(config_dir: PathBuf) -> Result<Self, ConfigError> {
         let notifications = Settings::notifications(&config_dir)?;
         let sites = Settings::sites(&config_dir)?;
+        let options = Settings::options(&config_dir)?;
 
         Ok(Settings {
             notifications,
             sites,
+            options,
         })
+    }
+
+    fn options(config_dir: &PathBuf) -> Result<Options, ConfigError> {
+        let mut options = Config::new();
+        let mut config_dir = config_dir.clone();
+        config_dir.push("options");
+
+        match options.merge(File::with_name(config_dir.as_path().to_str().unwrap())) {
+            Ok(_) => (),
+            Err(e) => return Err(e),
+        };
+
+        match options.try_into::<Options>() {
+            Ok(options) => Ok(options),
+            Err(e) => Err(e),
+        }
     }
 
     fn sites(config_dir: &PathBuf) -> Result<Option<Sites>, ConfigError> {
